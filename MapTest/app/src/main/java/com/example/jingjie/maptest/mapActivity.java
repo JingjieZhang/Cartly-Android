@@ -27,6 +27,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
@@ -53,8 +54,7 @@ import java.util.List;
 
 
 
-public class mapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener
+public class mapActivity extends AppCompatActivity implements OnMapReadyCallback
 {
     GoogleMap mMap;
     private GoogleApiClient mLocationClient;
@@ -95,12 +95,12 @@ public class mapActivity extends AppCompatActivity implements GoogleApiClient.Co
             {
                 e.printStackTrace();
             }
-
-            mLocationClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
+//
+//            mLocationClient = new GoogleApiClient.Builder(this)
+//                    .addApi(LocationServices.API)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .build();
 
             mLocationClient.connect();
             Button bt=(Button)findViewById(R.id.button);
@@ -163,12 +163,22 @@ public class mapActivity extends AppCompatActivity implements GoogleApiClient.Co
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney, Australia, and move the camera.
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
     private boolean initMap()
     {
         if (mMap == null)
         {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-            mMap = mapFragment.getMap();
+            //mMap = mapFragment.getMapAsync(this);
         }
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener()
@@ -398,13 +408,6 @@ public class mapActivity extends AppCompatActivity implements GoogleApiClient.Co
         }
     }
 
-
-    @Override
-    public void onConnected(Bundle bundle)
-    {
-
-    }
-
     public void navigation(MenuItem item)
     {
         mListener = new LocationListener()
@@ -459,7 +462,7 @@ public class mapActivity extends AppCompatActivity implements GoogleApiClient.Co
         request.setFastestInterval(1000);
 
         //register the request object
-        LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, request, mListener);
+       // LocationServices.FusedLocationApi.requestLocationUpdates(mLocationClient, request, mListener);
     }
 
 
@@ -472,37 +475,24 @@ public class mapActivity extends AppCompatActivity implements GoogleApiClient.Co
             LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, mListener);
         }
 
-        Location currentLocation = LocationServices.FusedLocationApi
-                .getLastLocation(mLocationClient);
-        if (currentLocation == null)
-        {
-            Toast.makeText(this, "Couldn't connect! Please activate GPS.", Toast.LENGTH_SHORT).show();
-        } else
-        {
-            LatLng latLng = new LatLng(
-                    currentLocation.getLatitude(),
-                    currentLocation.getLongitude()
-            );
-            addMarker(currentLocation.getLatitude(),currentLocation.getLongitude());
-            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(
-                    latLng, 16
-            );
-            mMap.animateCamera(update);
-        }
+//        Location currentLocation = LocationServices.FusedLocationApi
+//                .getLastLocation(mLocationClient) ;
+//        if (currentLocation == null)
+//        {
+//            Toast.makeText(this, "Couldn't connect! Please activate GPS.", Toast.LENGTH_SHORT).show();
+//        } else
+//        {
+//            LatLng latLng = new LatLng(
+//                    currentLocation.getLatitude(),
+//                    currentLocation.getLongitude()
+//            );
+//            addMarker(currentLocation.getLatitude(),currentLocation.getLongitude());
+//            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(
+//                    latLng, 16
+//            );
+//            mMap.animateCamera(update);
+//        }
     }
-
-    @Override
-    public void onConnectionSuspended(int i)
-    {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult)
-    {
-
-    }
-
 
     protected void onPause()
     {

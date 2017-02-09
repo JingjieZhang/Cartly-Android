@@ -3,6 +3,7 @@ package com.example.jingjie.maptest;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.content.Context;
 import android.widget.AdapterView;
@@ -11,6 +12,12 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     String startPos;
     String endPos;
     LocationData locationData=new LocationData();
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +47,115 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnButton3();
         addListenerOnButton4();
 
+        // listen for database change at child "random"
+//        mDatabase.child("random").addValueEventListener(new ValueEventListener()
+//        {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot)
+//            {
+//                if (dataSnapshot.exists())
+//                {
+//                    Toast.makeText(MainActivity.this,dataSnapshot.getValue().toString(),Toast.LENGTH_LONG ).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError)
+//            {
+//
+//            }
+//        });
 
+        // listen to all types of hanges to child "Requests"
+//        mDatabase.child("Requests").addChildEventListener(new ChildEventListener()
+//        {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s)
+//            {
+//
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s)
+//            {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot)
+//            {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s)
+//            {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError)
+//            {
+//
+//            }
+//        });
+        final Button firebase = (Button)findViewById(R.id.firebase);
+        firebase.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+
+
+                mDatabase.child("Users").addListenerForSingleValueEvent(new ValueEventListener()
+                {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            Log.i("Child", snapshot.getValue().toString());
+                        }
+
+                        if (dataSnapshot.getChildrenCount() == 0){
+                            Log.i("no children", " no children");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError)
+                    {
+
+                    }
+                });
+
+
+                // get a single value
+//                mDatabase.child("random").addListenerForSingleValueEvent(new ValueEventListener()
+//                {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot)
+//                    {
+//                        if (dataSnapshot.exists())
+//                        {
+//                            Toast.makeText(MainActivity.this, dataSnapshot.getValue().toString(), Toast.LENGTH_LONG).show();
+//                        } else {
+//                            Toast.makeText(MainActivity.this,"" + dataSnapshot.getChildrenCount(),Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError)
+//                    {
+//
+//                    }
+//                });
+
+
+                // set a single value
+//                mDatabase.child("random").setValue("Vrezh");
+
+            }
+        });
 
 
 
